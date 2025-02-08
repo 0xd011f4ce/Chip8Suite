@@ -1,0 +1,95 @@
+* Chip8 Emulator
+
+** The memory Layout
+
+The Chip8 has 4095 bytes of memory:
+
+#+begin_src artist
+  +-----------------------+
+  |                       | 0xFFF - End of Memory
+  +-----------------------+
+  |                       |
+  |                       |
+  |                       |
+  |     0x200/0xFFF       |
+  |     ProgramData       |
+  |                       |
+  |                       |
+  +-----------------------+ 0x200 - Start of Chip8 programs
+  |                       |
+  |      0x00/0x1FF       |
+  |   Reserved for Chip8  |
+  |                       |
+  +-----------------------+ 0x00 - Start of Chip8 RAM
+#+end_src
+
+Chip-8 has a stack that is an array of 16 16-bit values, used to store the
+addresses that the Chip8 should return to when returning from a subroutine,
+meaning there can be 16 levels of nested subroutines.
+
+** Registers
+
+Chip8 has 16 8-bit data registers, each can hold 1 byte of information.
+
+| Data Registers |
+|----------------|
+| V0             |
+| V1             |
+| V2             |
+| V3             |
+| V4             |
+| V5             |
+| V6             |
+| V7             |
+| V8             |
+| V9             |
+| VA             |
+| VB             |
+| VC             |
+| VD             |
+| VE             |
+| VF             |
+
+That means that the registers should be implemented as an array with a size of
+16:
+
+| V0 | V1 | V2 | V3 | V4 | V5 | V6 | V7 | V8 | ... |
+
+The Chip 8 also has some extra registers:
+- *I* - used to store memory addresses.
+- *PC* - points to the address oft he current instruction being executed. All the
+  instructions are 2 bytes in size, so this should be incremented by 2 per
+  instruction executed.
+- *SP* - 8-bit stack pointer, points to a location in the stack.
+- *Sound Timer*:
+  - Chip8 plays a beep when the sound timer is not zero
+  - Decrements at a rate of 70hz
+  - When zero no sound is played
+- *Delay Timer*:
+  - Chip8 stops executing instructions when the delay timer is greater than
+    zero.
+  - This is also decremented at a rate of 60hz.
+  - When the delay timer is zero, the program execution resumes.
+
+** The Display
+
+The size of the display is 64x32 pixels, and it's monocrome. Drawing to the
+display is done with sprites, not pixels. If a sprite overflows the screen, it
+wraps it back to the other side. The sprites can be a maximum of 8 bits of
+width, and up to 15 bytes in length.
+
+** The Keyboard
+
+The Chip-8 keyboard has 16 keys: from 0 to F.
+
+This is how the keyboard looks:
+
+| 1 | 2 | 3 | C |
+| 4 | 5 | 6 | D |
+| 7 | 8 | 9 | E |
+| A | 0 | B | F |
+
+** Instruction Set
+
+The Chip-8 instruction set has 36 different insturctions. These instructions can
+be for mathematical operations, drawing and more.
