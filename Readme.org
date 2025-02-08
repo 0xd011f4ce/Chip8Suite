@@ -1,0 +1,5 @@
+* Chip8 Suite
+
+Emulator and assembler for the Chip8.
+
+See notes taken through the development in [[file:Notes.org][Notes.org]]
