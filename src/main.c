@@ -11,6 +11,8 @@ main (int argc, char **argv)
 {
 	struct chip8 chip8;
 	chip8_init (&chip8);
+	chip8_screen_draw_sprite (&chip8.screen, 62, 10,
+														(const char *)&chip8.memory.memory[0x00], 5);
 
 	SDL_Init (SDL_INIT_EVERYTHING);
 	SDL_Window *window = SDL_CreateWindow (
@@ -57,10 +59,23 @@ main (int argc, char **argv)
 
 			SDL_SetRenderDrawColor (renderer, 0, 0, 0, 0);
 			SDL_RenderClear (renderer);
-
 			SDL_SetRenderDrawColor (renderer, 255, 255, 255, 0);
-			SDL_Rect r = { 0, 0, 40, 40 };
-			SDL_RenderFillRect (renderer, &r);
+
+			for (int x = 0; x < CHIP8_DISPLAY_WIDTH; x++)
+				{
+					for (int y = 0; y < CHIP8_DISPLAY_HEIGHT; y++)
+						{
+							if (chip8_screen_is_set (&chip8.screen, x, y))
+								{
+									SDL_Rect r = { 0 };
+									r.x = x * EMULATOR_WINDOW_MULTIPLIER;
+									r.y = y * EMULATOR_WINDOW_MULTIPLIER;
+									r.w = EMULATOR_WINDOW_MULTIPLIER;
+									r.h = EMULATOR_WINDOW_MULTIPLIER;
+									SDL_RenderFillRect (renderer, &r);
+								}
+						}
+				}
 
 			SDL_RenderPresent (renderer);
 		}

@@ -3,7 +3,8 @@ ECHO=echo -e
 CFLAGS=-Wall -Werror -std=gnu99 -O0 -g -Iinclude
 LIBS=-lSDL2
 
-FILES=build/main.o build/mem.o build/stack.o build/keyboard.o build/chip8.o
+FILES=build/main.o build/mem.o build/stack.o build/keyboard.o build/chip8.o \
+			build/screen.o
 OUT=bin/chip8.out
 
 all: $(FILES)
@@ -27,6 +28,10 @@ build/keyboard.o: src/keyboard.c
 	@$(CC) $(CFLAGS) $< -c -o $@ $(LIBS)
 
 build/chip8.o: src/chip8.c
+	@$(ECHO) "CC\t\t"$<
+	@$(CC) $(CFLAGS) $< -c -o $@ $(LIBS)
+
+build/screen.o: src/screen.c
 	@$(ECHO) "CC\t\t"$<
 	@$(CC) $(CFLAGS) $< -c -o $@ $(LIBS)
 
