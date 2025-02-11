@@ -1,4 +1,5 @@
 #include <SDL2/SDL.h>
+#include <unistd.h>
 
 #include "chip8.h"
 
@@ -78,6 +79,12 @@ main (int argc, char **argv)
 				}
 
 			SDL_RenderPresent (renderer);
+
+			if (chip8.registers.DT > 0)
+				{
+					sleep (100);
+					chip8.registers.DT -= 1;
+				}
 		}
 
 out:
