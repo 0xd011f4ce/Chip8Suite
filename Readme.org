@@ -3,3 +3,12 @@
 Emulator and assembler for the Chip8.
 
 See notes taken through the development in [[file:Notes.org][Notes.org]]
+
+** To-Do
+
+The entire instruction set of the Chip-8 is implemented now, the following items
+are pending:
+- Fix the delay timer, make things run better? to make it playable, basically
+- A Chip-8 assembler (so you can make games)
+- A Chip-8 disassembler (so you can read other people's games)
+- A Chip-8 debugger (maybe this is too much?)
