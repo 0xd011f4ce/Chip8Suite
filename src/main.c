@@ -8,12 +8,39 @@ const char keyboard_map[CHIP8_TOTAL_KEYS]
 				SDLK_8, SDLK_9, SDLK_a, SDLK_b, SDLK_c, SDLK_d, SDLK_e, SDLK_f };
 
 int
-main (int argc, char **argv)
+main (int argc, const char **argv)
 {
+	if (argc < 2)
+		{
+			fprintf (stderr, "you must provide a file to load.\n");
+			return EXIT_FAILURE;
+		}
+
+	const char *fname = argv[1];
+	printf ("the file to load is: %s\n", fname);
+
+	FILE *f = fopen (fname, "rb");
+	if (!f)
+		{
+			fprintf (stderr, "failed to open the file.\n");
+			return EXIT_FAILURE;
+		}
+
+	fseek (f, 0, SEEK_END);
+	long size = ftell (f);
+	fseek (f, 0, SEEK_SET);
+
+	char buf[size];
+	int res = fread (buf, size, 1, f);
+	if (res != 1)
+		{
+			fprintf (stderr, "failed to read from file.\n");
+			return EXIT_FAILURE;
+		}
+
 	struct chip8 chip8;
 	chip8_init (&chip8);
-	chip8_screen_draw_sprite (&chip8.screen, 62, 10,
-														(const char *)&chip8.memory.memory[0x00], 5);
+	chip8_load (&chip8, buf, size);
 
 	SDL_Init (SDL_INIT_EVERYTHING);
 	SDL_Window *window = SDL_CreateWindow (
@@ -23,6 +50,8 @@ main (int argc, char **argv)
 
 	SDL_Renderer *renderer
 			= SDL_CreateRenderer (window, -1, SDL_TEXTUREACCESS_TARGET);
+
+	chip8.registers.ST = 255;
 	while (1)
 		{
 			SDL_Event event;
@@ -85,9 +114,20 @@ main (int argc, char **argv)
 					sleep (100);
 					chip8.registers.DT -= 1;
 				}
+
+			if (chip8.registers.ST > 0)
+				{
+					/* TODO: Beep */
+					chip8.registers.ST -= 1;
+				}
+
+			unsigned short opcode
+					= chip8_memory_get_short (&chip8.memory, chip8.registers.PC);
+			chip8_exec (&chip8, opcode);
+			chip8.registers.PC += 2;
 		}
 
 out:
 	SDL_DestroyWindow (window);
-	return 0;
+	return EXIT_SUCCESS;
 }

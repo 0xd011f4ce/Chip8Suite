@@ -37,7 +37,7 @@ build/screen.o: src/screen.c
 
 run: all
 	@$(ECHO) "Runing the Chip8 compiler"
-	@$(OUT)
+	@$(OUT) $(rom)
 
 clean:
 	@$(ECHO) "Cleaning files..."
